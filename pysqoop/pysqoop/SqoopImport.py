@@ -74,9 +74,6 @@ class Sqoop():
 
 
 if __name__ == '__main__':
-    # sqoop = Sqoop(fields_terminated_by='\\;', escaped_by='\\\\', enclosed_by='\'\\\"\'', password='RSS_OWNER', null_non_string='\'\'')
-    # c = sqoop.perform_import()
-    # print('exit code: {}'.format(c))
     sqoop = Sqoop(help=True)
     c = sqoop.perform_import()
     print('exit code: {}'.format(c))
