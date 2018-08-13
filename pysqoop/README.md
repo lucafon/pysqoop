@@ -1,8 +1,9 @@
 # pysqoop
 A python package that lets you sqoop into HDFS data from RDBMS using sqoop.
 
-![PyPI](https://img.shields.io/badge/pip-v.0.0.1-blue.svg)
-![PyPI](https://img.shields.io/badge/python-3.5+-brightgreen.svg)
+[![PyPI](https://img.shields.io/badge/pip-v.0.0.1-blue.svg)](https://pypi.org/project/pysqoop)
+![Python](https://img.shields.io/badge/python-3.5+-green.svg)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 To install the package via pip run 
 
@@ -45,3 +46,5 @@ Common arguments:
                                                               class name
    ...
 ```
+
+A more concrete example
