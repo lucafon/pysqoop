@@ -24,7 +24,7 @@ This will print the output of the command
 sqoop --help
 `
 
-to you stoud e.g.
+to your stoud e.g.
 
 ```
 SLF4J: Class path contains multiple SLF4J bindings.
