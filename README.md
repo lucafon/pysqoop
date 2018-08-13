@@ -1,9 +1,10 @@
 # pysqoop
 A python package that lets you sqoop into HDFS data from RDBMS using sqoop.
 
-[![PyPI](https://img.shields.io/badge/pip-v.0.0.1-blue.svg)](https://pypi.org/project/pysqoop)
-![Python](https://img.shields.io/badge/python-3.5+-green.svg)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![PyPI](https://img.shields.io/badge/pip-v.0.0.4-blue.svg)](https://pypi.org/project/pysqoop)
+![Python](https://img.shields.io/badge/python-3.5+,2.7-green.svg)
+[![Tests](https://img.shields.io/badge/tests-4%20%2F%204-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unintary_tests.py)
+[![MIT license](http://img.shields.io/badge/license-MIT-orange.svg)](http://opensource.org/licenses/MIT)
 
 To install the package via pip run 
 
@@ -47,4 +48,19 @@ Common arguments:
    ...
 ```
 
-A more concrete example
+A more concrete example; the following code
+```
+sqoop = Sqoop(fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
+enclosed_by='\'"\'', escaped_by='\\\\', null_string='\'\'', null_non_string='\'\'',
+table='sample_table', target_dir='hdfs://remote-cluster/user/hive/warehouse/db/sample_table',
+delete_target_dir=True, connect='jdbc:oracle:thin:@//your_ip:your_port/your_schema',
+username='user', password='pwd', num_mappers=2,
+bindir='/path/to/bindir/folder')
+sqoop.perform_import()
+```
+
+will execute the following command
+
+`
+sqoop import -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
+`

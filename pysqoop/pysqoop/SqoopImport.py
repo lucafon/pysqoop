@@ -1,11 +1,12 @@
-from subprocess import call, STDOUT
+from subprocess import call
+import collections
 
 
 class Sqoop():
     _EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION = '--table or --query is required for import. (Or use sqoop import-all-tables.)\nTry --help for usage instructions.'
     _ALL_EMPTY_PARAMETERS_EXCEPTION = 'all parameters are empty'
     _WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION = "--incremental needs either 'append' or 'lastmodified'"
-    _properties = {}
+    _properties = collections.OrderedDict()
 
     def __init__(self, fs=None,create=None, hive_drop_import_delims=None,fields_terminated_by=None, input_escaped_by=None, enclosed_by=None, escaped_by=None,
                  null_string=None, null_non_string=None, table=None, target_dir=None, delete_target_dir=None, connect=None,
