@@ -17,7 +17,7 @@ You can then use the package using
 ```
 from pysqoop.SqoopImport import Sqoop 
 sqoop = Sqoop(help=True)
-code = s.perform_import()
+code = sqoop.perform_import()
 ```
 
 This will print the output of the command
@@ -57,6 +57,7 @@ table='sample_table', target_dir='hdfs://remote-cluster/user/hive/warehouse/db/s
 delete_target_dir=True, connect='jdbc:oracle:thin:@//your_ip:your_port/your_schema',
 username='user', password='pwd', num_mappers=2,
 bindir='/path/to/bindir/folder')
+
 sqoop.perform_import()
 ```
 
