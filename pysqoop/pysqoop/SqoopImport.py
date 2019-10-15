@@ -14,7 +14,7 @@ class Sqoop():
                  check_column=None, last_value=None, connection_manager=None, connection_param_file=None, driver=None,
                  hadoop_home=None, hadoop_mapred_home=None, metadata_transaction_isolation_level=None, password_alias=None,
                  password_file=None, relaxed_isolation=None, skip_dist_cache=None, temporary_root_dir=None, verbose=None,
-                 num_mappers=None, bindir=None, direct=None, parquetfile=None):
+                 num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None):
         self._properties['-fs'] = fs
         self._properties['--create'] = create
         self._properties['--hive-drop-import-delims'] = hive_drop_import_delims
@@ -43,6 +43,7 @@ class Sqoop():
         self._properties['--password-alias'] = password_alias
         self._properties['--password-file'] = password_file
         self._properties['--relaxed-isolation'] = relaxed_isolation
+        self._properties['--split-by'] = split_by
         self._properties['--skip-dist-cache'] = skip_dist_cache
         self._properties['--temporary-rootdir'] = temporary_root_dir
         self._properties['--verbose'] = verbose
