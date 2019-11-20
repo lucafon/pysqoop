@@ -16,7 +16,7 @@ class Sqoop():
                  password_file=None, relaxed_isolation=None, skip_dist_cache=None, temporary_root_dir=None, verbose=None,
                  num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None, hive_partition_key=None,
                  hive_partition_value=None , hive_import=None, as_textfile=None, hive_delims_replacement=None, hive_table=None,
-                 hive_overwrite=None, warehouse_dir=None):
+                 hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None):
         self._properties['-fs'] = fs
         self._properties['--create'] = create
         self._properties['--hive-drop-import-delims'] = hive_drop_import_delims
@@ -56,6 +56,7 @@ class Sqoop():
         self._properties['--num-mappers'] = num_mappers
         self._properties['--bindir'] = bindir
         self._properties['--hive-delims-replacement'] = hive_delims_replacement
+        self._properties['--columns'] = columns
         if help:
             self._properties['--help'] = ''
         if hive_import:
@@ -72,11 +73,15 @@ class Sqoop():
             self._properties['--direct'] = ''
         if parquetfile:
             self._properties['--as-parquetfile'] = ''
+        if oracle_partition:
+            oracle_part='-Doraoop.import.partitions={}'.format(oracle_partition)
         self._properties['--query'] = query
         self._perform_checks()
-        self._coomand = 'sqoop import {}'.format(
-            ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None]))
-
+        if not oracle_partition:
+            self._coomand = 'sqoop import {}'.format(' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None]))
+        else:
+            self._coomand = 'sqoop import {} {}'.format(oracle_part,' '.join(['{} {}'.format(key,val) for key, val in self._properties.items() if val is not None]))
+            
     def _perform_checks(self):
         if all(v is None for v in self._properties.values()):
             raise Exception(self._ALL_EMPTY_PARAMETERS_EXCEPTION)
