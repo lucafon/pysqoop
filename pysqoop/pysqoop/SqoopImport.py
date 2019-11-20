@@ -14,7 +14,9 @@ class Sqoop():
                  check_column=None, last_value=None, connection_manager=None, connection_param_file=None, driver=None,
                  hadoop_home=None, hadoop_mapred_home=None, metadata_transaction_isolation_level=None, password_alias=None,
                  password_file=None, relaxed_isolation=None, skip_dist_cache=None, temporary_root_dir=None, verbose=None,
-                 num_mappers=None, bindir=None, direct=None, parquetfile=None):
+                 num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None, hive_partition_key=None,
+                 hive_partition_value=None , hive_import=None, as_textfile=None, hive_delims_replacement=None, hive_table=None,
+                 hive_overwrite=None, warehouse_dir=None):
         self._properties['-fs'] = fs
         self._properties['--create'] = create
         self._properties['--hive-drop-import-delims'] = hive_drop_import_delims
@@ -26,6 +28,7 @@ class Sqoop():
         self._properties['--null-non-string'] = null_non_string
         self._properties['--table'] = table
         self._properties['--target-dir'] = target_dir
+        self._properties['--warehouse-dir'] = warehouse_dir
         self._properties['--delete-target-dir'] = delete_target_dir
         self._properties['--connect'] = connect
         self._properties['--username'] = username
@@ -43,13 +46,24 @@ class Sqoop():
         self._properties['--password-alias'] = password_alias
         self._properties['--password-file'] = password_file
         self._properties['--relaxed-isolation'] = relaxed_isolation
+        self._properties['--split-by'] = split_by
+        self._properties['--hive-table'] = hive_table
+        self._properties['--hive-partition-key'] = hive_partition_key
+        self._properties['--hive-partition-value'] = hive_partition_value
         self._properties['--skip-dist-cache'] = skip_dist_cache
         self._properties['--temporary-rootdir'] = temporary_root_dir
         self._properties['--verbose'] = verbose
         self._properties['--num-mappers'] = num_mappers
         self._properties['--bindir'] = bindir
+        self._properties['--hive-delims-replacement'] = hive_delims_replacement
         if help:
             self._properties['--help'] = ''
+        if hive_import:
+            self._properties['--hive-import'] = ''
+        if hive_overwrite:
+            self._properties['--hive-overwrite'] = ''
+        if as_textfile:
+            self._properties['--as-textfile'] = ''
         if hive_drop_import_delims:
             self._properties['--hive-drop-import-delims'] = ''
         if delete_target_dir:

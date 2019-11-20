@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pysqoop",
-    version="0.0.4",
+    version="0.0.7",
     author="Luca Fontanili",
     author_email="luca.fontanili93@gmail.com",
     description="A simple package to let you Sqoop in data in python",
