@@ -34,7 +34,10 @@ class TestStringMethods(unittest.TestCase):
             self.assertEqual(expected, sqoop.command())
     
     def test_hbase_basic_import(self):
-        expected = "sqoop import --table Rutas --connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' --incremental lastmodified --hbase-table Rutas --hbase-row-key Id_Ruta -m 1"
+        expected = "sqoop import --table Rutas "\
+            "--connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' "\
+            "--incremental lastmodified --hbase-table Rutas "\
+            "--hbase-row-key Id_Ruta -m 1"
         sqoop = Sqoop(
             connect="'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password'",
             table="Rutas",

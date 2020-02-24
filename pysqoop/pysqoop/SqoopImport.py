@@ -131,5 +131,4 @@ class Sqoop(object):
             print(e)
             return 90
     
-    
 
