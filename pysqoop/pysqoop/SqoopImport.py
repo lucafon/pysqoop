@@ -2,10 +2,12 @@ from subprocess import call
 import collections
 
 
-class Sqoop():
+class Sqoop(object):
     _EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION = '--table or --query is required for import. (Or use sqoop import-all-tables.)\nTry --help for usage instructions.'
     _ALL_EMPTY_PARAMETERS_EXCEPTION = 'all parameters are empty'
     _WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION = "--incremental needs either 'append' or 'lastmodified'"
+    _ERROR_HBASE_KEY_NEEDED = "--hbase-table needs the --hbase-row-key param"
+    _ERROR_HBASE_TABLE_NEEDED = "--hbase-row-key needs the --hbase-table param"
     _properties = collections.OrderedDict()
     oracle_partition=None
 
@@ -65,6 +67,7 @@ class Sqoop():
         self._properties['--hbase-table'] = hbase_table
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
+        self._command = None
         
         if help:
             self._properties['--help'] = ''
@@ -89,12 +92,12 @@ class Sqoop():
         
     def build_command(self)->None:
         if not self.oracle_partition:
-            self._coomand = \
+            self._command = \
             'sqoop import {}'.format(
                 ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
                 )
         else:
-            self._coomand = \
+            self._command = \
             'sqoop import {} {}'.format(
                 self.oracle_partition,
                 ' '.join(['{} {}'.format(key,val) for key, val in self._properties.items() if val is not None])
@@ -107,21 +110,26 @@ class Sqoop():
             raise Exception(self._EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION)
         if self._properties['--incremental'] and self._properties['--incremental'] not in ['lastmodified', 'append']:
             raise Exception(self._WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION)
+        if self._properties['--hbase-table'] and not self._properties['--hbase-row-key'] :
+            raise Exception(self._ERROR_HBASE_KEY_NEEDED)
+        if self._properties['--hbase-row-key'] and not self._properties['--hbase-table'] :
+            raise Exception(self._ERROR_HBASE_KEY_NEEDED)
 
     def properties(self):
         return self._properties
 
     def command(self)->str:
         self.build_command()
-        return self._coomand
+        return self._command
 
     def perform_import(self):
         self.build_command()
         try:
-            print(self._coomand)
-            return call(self._coomand, shell=True)
+            print(self._command)
+            return call(self._command, shell=True)
         except Exception as e:
             print(e)
             return 90
+    
     
 
