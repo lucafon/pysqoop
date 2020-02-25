@@ -65,7 +65,7 @@ class Sqoop(object):
         self._properties['--columns'] = columns
 
         #columns for HBase
-        self._properties['--hbase_table'] = hbase_table
+        self._properties['--hbase-table'] = hbase_table
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
         
