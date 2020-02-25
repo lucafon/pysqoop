@@ -63,10 +63,12 @@ class Sqoop(object):
         self._properties['--bindir'] = bindir
         self._properties['--hive-delims-replacement'] = hive_delims_replacement
         self._properties['--columns'] = columns
+
         #columns for HBase
         self._properties['--hbase_table'] = hbase_table
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
+        
         self._command = None
         
         if help:
@@ -88,9 +90,9 @@ class Sqoop(object):
         if oracle_partition:
             self._oracle_partition='-Doraoop.import.partitions={}'.format(oracle_partition)
         self._properties['--query'] = query
-        self._perform_checks()
         
     def build_command(self)->None:
+        self._perform_checks()
         if not self.oracle_partition:
             self._command = \
             'sqoop import {}'.format(
@@ -131,4 +133,17 @@ class Sqoop(object):
             print(e)
             return 90
     
-
+    def set_param(self, param:str, value:str)->bool:
+        if param in self._properties:
+            self._properties[param] = value
+            return True
+        else:
+            return False
+    
+    def unset_param(self, param:str)->bool:
+        if param in self._properties:
+            self._properties[param] = None
+            return True
+        else:
+            return False
+        
