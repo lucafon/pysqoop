@@ -115,7 +115,7 @@ class Sqoop(object):
         if self._properties['--hbase-table'] and not self._properties['--hbase-row-key'] :
             raise Exception(self._ERROR_HBASE_KEY_NEEDED)
         if self._properties['--hbase-row-key'] and not self._properties['--hbase-table'] :
-            raise Exception(self._ERROR_HBASE_KEY_NEEDED)
+            raise Exception(self._ERROR_HBASE_TABLE_NEEDED)
 
     def properties(self):
         return self._properties
