@@ -63,8 +63,8 @@ class Sqoop(object):
         self._properties['--bindir'] = bindir
         self._properties['--hive-delims-replacement'] = hive_delims_replacement
         self._properties['--columns'] = columns
-        #columnas para hbase
-        self._properties['--hbase-table'] = hbase_table
+        #columns for HBase
+        self._properties['--hbase_table'] = hbase_table
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
         self._command = None
