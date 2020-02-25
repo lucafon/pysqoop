@@ -138,4 +138,11 @@ class Sqoop(object):
             return True
         else:
             return False
+    
+    def unset_param(self, param:str)->bool:
+        if param in self._properties:
+            self._properties[param] = None
+            return True
+        else:
+            return False
         

@@ -57,6 +57,7 @@ class TestStringMethods(unittest.TestCase):
         sqoop.set_param(param="--connect", value="'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password'")
         sqoop.set_param(param="--table", value="Rutas")
         sqoop.set_param(param="--incremental", value="lastmodified")
+        #sqoop.unset_param(param="--connect")
         sqoop.command()
         sqoop.set_param(param="--hbase-table", value="Rutas")
         sqoop.set_param(param="--hbase-row-key", value="Id_Ruta")
