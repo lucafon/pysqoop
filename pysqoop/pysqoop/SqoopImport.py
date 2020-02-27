@@ -6,8 +6,9 @@ class Sqoop(object):
     _EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION = '--table or --query is required for import. (Or use sqoop import-all-tables.)\nTry --help for usage instructions.'
     _ALL_EMPTY_PARAMETERS_EXCEPTION = 'all parameters are empty'
     _WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION = "--incremental needs either 'append' or 'lastmodified'"
-    _ERROR_HBASE_KEY_NEEDED = "--hbase-table needs the --hbase-row-key param"
-    _ERROR_HBASE_TABLE_NEEDED = "--hbase-row-key needs the --hbase-table param"
+    _ERROR_HBASE_KEY_NEEDED = "--hbase-table needs the --hbase-row-key and --column-family param"
+    _ERROR_HBASE_TABLE_NEEDED = "--hbase-row-key needs the --hbase-table and --column-family param"
+    _ERROR_HBASE_KEY_TABLE_NEEDED = "--column-family needs the --hbase-table and --hbase-row-key param"
     _properties = collections.OrderedDict()
     oracle_partition=None
 
@@ -21,7 +22,7 @@ class Sqoop(object):
                  num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None, hive_partition_key=None,
                  hive_partition_value=None , hive_import=None, as_textfile=None, hive_delims_replacement=None, hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
-                 hbase_table=None, hbase_row_key=None, m=None
+                 hbase_table=None, column_family=None, hbase_row_key=None, m=None
                  ):
         self._properties['-fs'] = fs
         self._properties['--create'] = create
@@ -66,6 +67,7 @@ class Sqoop(object):
 
         #columns for HBase
         self._properties['--hbase-table'] = hbase_table
+        self._properties['--column-family'] = column_family
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
         
@@ -112,10 +114,12 @@ class Sqoop(object):
             raise Exception(self._EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION)
         if self._properties['--incremental'] and self._properties['--incremental'] not in ['lastmodified', 'append']:
             raise Exception(self._WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION)
-        if self._properties['--hbase-table'] and not self._properties['--hbase-row-key'] :
+        if self._properties['--hbase-table'] and ( not self._properties['--hbase-row-key'] or not self._properties['--column-family'] ):
             raise Exception(self._ERROR_HBASE_KEY_NEEDED)
-        if self._properties['--hbase-row-key'] and not self._properties['--hbase-table'] :
+        if self._properties['--hbase-row-key'] and ( not self._properties['--hbase-table'] or not self._properties['--column-family'] ):
             raise Exception(self._ERROR_HBASE_TABLE_NEEDED)
+        if self._properties['--column-family'] and ( not self._properties['--hbase-table'] or not self._properties['--hbase-row-key']):
+            raise Exception(self._ERROR_HBASE_KEY_TABLE_NEEDED)
 
     def properties(self):
         return self._properties
