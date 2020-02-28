@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pysqoop",
-    version="0.0.10",
+    version="0.0.11",
     author="Luca Fontanili",
     author_email="luca.fontanili93@gmail.com",
     description="A simple package to let you Sqoop into HDFS/Hive/HBase with python",
