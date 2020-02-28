@@ -1,7 +1,7 @@
 # pysqoop
 A python package that lets you sqoop into HDFS data from RDBMS using sqoop.
 
-[![PyPI](https://img.shields.io/badge/pip-v.0.0.9-blue.svg)](https://pypi.org/project/pysqoop)
+[![PyPI](https://img.shields.io/badge/pip-v.0.0.10-blue.svg)](https://pypi.org/project/pysqoop)
 ![Python](https://img.shields.io/badge/python-3.5+,2.7-green.svg)
 [![Tests](https://img.shields.io/badge/tests-4%20%2F%204-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unintary_tests.py)
 [![MIT license](http://img.shields.io/badge/license-MIT-orange.svg)](http://opensource.org/licenses/MIT)
@@ -14,7 +14,7 @@ pip install pysqoop
 
 You can then use the package using
 
-```
+```python
 from pysqoop.SqoopImport import Sqoop 
 sqoop = Sqoop(help=True)
 code = sqoop.perform_import()
@@ -50,7 +50,7 @@ Common arguments:
 
 #### A more concrete example
 The following code
-```
+```python
 sqoop = Sqoop(fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
 enclosed_by='\'"\'', escaped_by='\\\\', null_string='\'\'', null_non_string='\'\'',
 table='sample_table', target_dir='hdfs://remote-cluster/user/hive/warehouse/db/sample_table',
@@ -66,6 +66,25 @@ will execute the following command
 `
 sqoop import -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
 `
+
+#### Conditional Building
+
+Use the `set_param`, `unset_param` function to build conditioned sqoop imports.
+
+```python
+
+sqoop = Sqoop(table="MyTable")
+
+sqoop.set_param(param="--connect", value="jdbc:a_valid_string")
+
+if taget_is_hbase :
+   added_table = sqoop.set_param(param="--hbase-table", value="MyTable")
+   added_key = sqoop.set_param(param="--hbase-row-key", value="Id_MyTable")
+   if added_table and added_key:
+      print("all params added :D")
+
+sqoop.perform_import()
+```
 
 ### TODOs
 * handle sqoop jobs

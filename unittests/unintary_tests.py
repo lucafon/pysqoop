@@ -1,5 +1,5 @@
 import unittest
-from pysqoop.pysqoop.SqoopImport import Sqoop
+from pysqoop.SqoopImport import Sqoop
 
 
 class TestStringMethods(unittest.TestCase):
