@@ -11,6 +11,7 @@ class Sqoop(object):
     _ERROR_HBASE_KEY_TABLE_NEEDED = "--column-family needs the --hbase-table and --hbase-row-key param"
     _properties = collections.OrderedDict()
     oracle_partition=None
+    verbose_operations=False
 
     def __init__(self, fs=None,create=None, hive_drop_import_delims=None,fields_terminated_by=None,
                  input_escaped_by=None, enclosed_by=None, escaped_by=None, null_string=None,
@@ -22,8 +23,10 @@ class Sqoop(object):
                  num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None, hive_partition_key=None,
                  hive_partition_value=None , hive_import=None, as_textfile=None, hive_delims_replacement=None, hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
-                 hbase_table=None, column_family=None, hbase_row_key=None, m=None
+                 hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False
                  ):
+        self.verbose_operations=verbose_operations
+        
         self._properties['-fs'] = fs
         self._properties['--create'] = create
         self._properties['--hive-drop-import-delims'] = hive_drop_import_delims
@@ -95,6 +98,8 @@ class Sqoop(object):
         
     def build_command(self)->None:
         self._perform_checks()
+        if self.verbose_operations:
+            print(f"building command")
         if not self.oracle_partition:
             self._command = \
             'sqoop import {}'.format(
@@ -140,6 +145,8 @@ class Sqoop(object):
     def set_param(self, param:str, value:str)->bool:
         if param in self._properties:
             self._properties[param] = value
+            if self.verbose_operations:
+                print(f"setting {param} : {value}")
             return True
         else:
             return False
@@ -147,6 +154,8 @@ class Sqoop(object):
     def unset_param(self, param:str)->bool:
         if param in self._properties:
             self._properties[param] = None
+            if self.verbose_operations:
+                print(f"unsetting {param} : {self._properties[param]}")
             return True
         else:
             return False
