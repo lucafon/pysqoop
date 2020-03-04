@@ -1,5 +1,5 @@
 # pysqoop
-A python package that lets you sqoop into HDFS data from RDBMS using sqoop.
+A python package that lets you sqoop into HDFS/Hive/HBase data from RDBMS using sqoop.
 
 [![PyPI](https://img.shields.io/badge/pip-v.0.0.11-blue.svg)](https://pypi.org/project/pysqoop)
 ![Python](https://img.shields.io/badge/python-3.5+,2.7-green.svg)
@@ -48,6 +48,11 @@ Common arguments:
    ...
 ```
 
+#### Useful Resources
+
+* HBase Client for Python : [happybase](https://github.com/python-happybase/happybase/blob/master/doc/index.rst)
+
+
 #### A more concrete example
 The following code
 ```python
@@ -86,7 +91,13 @@ if taget_is_hbase :
 sqoop.perform_import()
 ```
 
-### TODOs
+
+### Doing
+
 * handle sqoop jobs
+
+
+### TODOs
+
 * add missing parameters
 * more tests coverage
