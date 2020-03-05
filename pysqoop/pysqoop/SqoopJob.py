@@ -34,7 +34,7 @@ class SqoopJob(object):
             
     def set_priority(self, priority:str)->bool:
         '''change priority of a runing job VERY_HIGH HIGH NORMAL LOW VERY_LOW DEFAULT'''
-        command = "mapred job -set-priority {priority}"
+        command = f"mapred job -set-priority {priority}"
         if priority in priority_options:
             try:
                 process = subprocess.run(
