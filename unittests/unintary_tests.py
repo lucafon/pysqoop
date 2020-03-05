@@ -32,12 +32,12 @@ class TestStringMethods(unittest.TestCase):
                           username='user', password='pwd', num_mappers=2,
                           bindir='/path/to/bindir/folder')
             self.assertEqual(expected, sqoop.command())
-    
+
     def test_hbase_basic_import(self):
-        expected = "sqoop import --table Rutas "\
-            "--connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' "\
-            "--incremental lastmodified --hbase-table Rutas --column-family Id_Ruta "\
-            "--hbase-row-key Id_Ruta -m 1"
+        expected = "sqoop import --table Rutas " \
+                   "--connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' " \
+                   "--incremental lastmodified --hbase-table Rutas --column-family Id_Ruta " \
+                   "--hbase-row-key Id_Ruta -m 1"
         sqoop = Sqoop(
             connect="'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password'",
             table="Rutas",
@@ -46,25 +46,27 @@ class TestStringMethods(unittest.TestCase):
             hbase_row_key="Id_Ruta",
             column_family="Id_Ruta",
             m=1
-            )
+        )
         self.assertEqual(expected, sqoop.command())
-        
+
     def test_hbase_lazy_contruction(self):
-        expected = "sqoop import --table Rutas "\
-            "--connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' "\
-            "--incremental lastmodified --hbase-table Rutas --column-family Id_Ruta "\
-            "--hbase-row-key Id_Ruta -m 1"
+        expected = "sqoop import --table Rutas " \
+                   "--connect 'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password' " \
+                   "--incremental lastmodified --hbase-table Rutas --column-family Id_Ruta " \
+                   "--hbase-row-key Id_Ruta -m 1"
         sqoop = Sqoop()
-        sqoop.set_param(param="--connect", value="'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password'")
+        sqoop.set_param(param="--connect",
+                        value="'jdbc:sqlserver://127.0.0.1:1433;DatabaseName=SQLDB;user=root;password=password'")
         sqoop.set_param(param="--table", value="Rutas")
         sqoop.set_param(param="--incremental", value="lastmodified")
-        #sqoop.unset_param(param="--connect")
+        # sqoop.unset_param(param="--connect")
         sqoop.command()
         sqoop.set_param(param="--hbase-table", value="Rutas")
         sqoop.set_param(param="--column-family", value="Id_Ruta")
         sqoop.set_param(param="--hbase-row-key", value="Id_Ruta")
         sqoop.set_param(param="-m", value="1")
         self.assertEqual(expected, sqoop.command())
+
 
 if __name__ == '__main__':
     unittest.main()

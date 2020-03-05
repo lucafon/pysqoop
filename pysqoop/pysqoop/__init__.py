@@ -1,2 +1,2 @@
 name = "pysqoop"
-__all__= ['SqoopImport'.'SqoopJob']
+__all__= ['SqoopImport', 'SqoopJob', 'MapredJob']
