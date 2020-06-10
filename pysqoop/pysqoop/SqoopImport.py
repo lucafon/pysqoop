@@ -73,7 +73,8 @@ class Sqoop(object):
         self._properties['--bindir'] = bindir
         self._properties['--hive-delims-replacement'] = hive_delims_replacement
         self._properties['--columns'] = columns
-        # Aca tendria que agregar las properties para hacer la export.
+        self._properties['--query'] = query
+        # export dir added for exports
         self._properties['--export-dir'] = export_dir
 
         # columns for HBase
@@ -103,10 +104,6 @@ class Sqoop(object):
             self._properties['--as-parquetfile'] = ''
         if oracle_partition:
             self._oracle_partition = '-Doraoop.import.partitions={}'.format(oracle_partition)
-        # Aca tendria que poner alguna opcion de la expor que sea de true or false.
-        self._properties['--query'] = query
-        # Esta --query me parece que esta un poco colgada... Esta desprolija
-        # Nada mas para init...
 
     def build_command(self) -> None:
         self._perform_checks()
@@ -152,9 +149,6 @@ class Sqoop(object):
         if self._properties['--column-family'] and (
                 not self._properties['--hbase-table'] or not self._properties['--hbase-row-key']):
             raise Exception(self._ERROR_HBASE_KEY_TABLE_NEEDED)
-        # Aca tendria que chequear que mi codigo pase todos los checks...
-        # O directamnte, cambiarle el nombre a la funcion existente y crear las
-        # funciones build_export_command y build_import_command
 
     def properties(self):
         return self._properties
@@ -162,7 +156,6 @@ class Sqoop(object):
     def command(self) -> str:
         self.build_command()
         return self._command
-        # Ojo con esto... tengo que camviar el attribute _command
 
     def export_command(self) -> str:
         self.build_export_command()
@@ -176,8 +169,6 @@ class Sqoop(object):
         except Exception as e:
             print(e)
             return 90
-        # Se puede cambiar por un comando generico que se llame perform_task...
-        # O, crear mi propio comando que se llame perform export.
 
     def perform_export(self):
         self.build_export_command()
