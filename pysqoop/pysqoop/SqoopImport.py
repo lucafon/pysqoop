@@ -10,23 +10,29 @@ class Sqoop(object):
     _ERROR_HBASE_TABLE_NEEDED = "--hbase-row-key needs the --hbase-table and --column-family param"
     _ERROR_HBASE_KEY_TABLE_NEEDED = "--column-family needs the --hbase-table and --hbase-row-key param"
     _properties = collections.OrderedDict()
-    oracle_partition=None
-    verbose_operations=False
+    oracle_partition = None
+    verbose_operations = False
 
-    def __init__(self, fs=None,create=None, hive_drop_import_delims=None,fields_terminated_by=None,
+    def __init__(self, fs=None, create=None, hive_drop_import_delims=None, fields_terminated_by=None,
                  input_escaped_by=None, enclosed_by=None, escaped_by=None, null_string=None,
                  null_non_string=None, table=None, target_dir=None, delete_target_dir=None, connect=None,
                  username=None, password=None, map_colmn_java=None, help=None, query=None, incremental=None,
                  check_column=None, last_value=None, connection_manager=None, connection_param_file=None, driver=None,
-                 hadoop_home=None, hadoop_mapred_home=None, metadata_transaction_isolation_level=None, password_alias=None,
-                 password_file=None, relaxed_isolation=None, skip_dist_cache=None, temporary_root_dir=None, verbose=None,
+                 hadoop_home=None, hadoop_mapred_home=None, metadata_transaction_isolation_level=None,
+                 password_alias=None,
+                 password_file=None, relaxed_isolation=None, skip_dist_cache=None, temporary_root_dir=None,
+                 verbose=None,
                  num_mappers=None, bindir=None, direct=None, parquetfile=None, split_by=None, hive_partition_key=None,
-                 hive_partition_value=None , hive_import=None, as_textfile=None, hive_delims_replacement=None, hive_table=None,
+                 hive_partition_value=None, hive_import=None, as_textfile=None, hive_delims_replacement=None,
+                 hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
-                 hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False
+                 hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False,
+                 export_dir=None
                  ):
-        self.verbose_operations=verbose_operations
-        
+        # export_dir agregado.
+
+        self.verbose_operations = verbose_operations
+
         self._properties['-fs'] = fs
         self._properties['--create'] = create
         self._properties['--hive-drop-import-delims'] = hive_drop_import_delims
@@ -67,15 +73,18 @@ class Sqoop(object):
         self._properties['--bindir'] = bindir
         self._properties['--hive-delims-replacement'] = hive_delims_replacement
         self._properties['--columns'] = columns
+        # Aca tendria que agregar las properties para hacer la export.
+        self._properties['--export-dir'] = export_dir
 
-        #columns for HBase
+        # columns for HBase
         self._properties['--hbase-table'] = hbase_table
         self._properties['--column-family'] = column_family
         self._properties['--hbase-row-key'] = hbase_row_key
         self._properties['-m'] = m
-        
+
         self._command = None
-        
+        self._export_command = None
+
         if help:
             self._properties['--help'] = ''
         if hive_import:
@@ -93,45 +102,71 @@ class Sqoop(object):
         if parquetfile:
             self._properties['--as-parquetfile'] = ''
         if oracle_partition:
-            self._oracle_partition='-Doraoop.import.partitions={}'.format(oracle_partition)
+            self._oracle_partition = '-Doraoop.import.partitions={}'.format(oracle_partition)
+        # Aca tendria que poner alguna opcion de la expor que sea de true or false.
         self._properties['--query'] = query
-        
-    def build_command(self)->None:
+        # Esta --query me parece que esta un poco colgada... Esta desprolija
+        # Nada mas para init...
+
+    def build_command(self) -> None:
         self._perform_checks()
         if self.verbose_operations:
             print(f"building command")
         if not self.oracle_partition:
             self._command = \
-            'sqoop import {}'.format(
-                ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
+                'sqoop import {}'.format(
+                    ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
                 )
         else:
             self._command = \
-            'sqoop import {} {}'.format(
-                self.oracle_partition,
-                ' '.join(['{} {}'.format(key,val) for key, val in self._properties.items() if val is not None])
+                'sqoop import {} {}'.format(
+                    self.oracle_partition,
+                    ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
                 )
-    
+
+    def build_export_command(self) -> None:
+        """ Builds the command to perform Sqoop Exports"""
+        # self._perform_checks()
+        # skipping checks for right now.
+        if self.verbose_operations:
+            print(f"building export command")
+        self._export_command = \
+            'sqoop export {}'.format(
+                ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
+            )
+
     def _perform_checks(self):
         if all(v is None for v in self._properties.values()):
             raise Exception(self._ALL_EMPTY_PARAMETERS_EXCEPTION)
-        if not self._properties['--table'] and not self._properties['--query'] and '--help' not in self._properties.keys():
+        if not self._properties['--table'] and not self._properties[
+            '--query'] and '--help' not in self._properties.keys():
             raise Exception(self._EMPTY_TABLE_AND_QUERY_PARAMETERS_EXCEPTION)
         if self._properties['--incremental'] and self._properties['--incremental'] not in ['lastmodified', 'append']:
             raise Exception(self._WRONG_INCREMENTAL_ATTRIBUTE_EXCEPTION)
-        if self._properties['--hbase-table'] and ( not self._properties['--hbase-row-key'] or not self._properties['--column-family'] ):
+        if self._properties['--hbase-table'] and (
+                not self._properties['--hbase-row-key'] or not self._properties['--column-family']):
             raise Exception(self._ERROR_HBASE_KEY_NEEDED)
-        if self._properties['--hbase-row-key'] and ( not self._properties['--hbase-table'] or not self._properties['--column-family'] ):
+        if self._properties['--hbase-row-key'] and (
+                not self._properties['--hbase-table'] or not self._properties['--column-family']):
             raise Exception(self._ERROR_HBASE_TABLE_NEEDED)
-        if self._properties['--column-family'] and ( not self._properties['--hbase-table'] or not self._properties['--hbase-row-key']):
+        if self._properties['--column-family'] and (
+                not self._properties['--hbase-table'] or not self._properties['--hbase-row-key']):
             raise Exception(self._ERROR_HBASE_KEY_TABLE_NEEDED)
+        # Aca tendria que chequear que mi codigo pase todos los checks...
+        # O directamnte, cambiarle el nombre a la funcion existente y crear las
+        # funciones build_export_command y build_import_command
 
     def properties(self):
         return self._properties
 
-    def command(self)->str:
+    def command(self) -> str:
         self.build_command()
         return self._command
+        # Ojo con esto... tengo que camviar el attribute _command
+
+    def export_command(self) -> str:
+        self.build_export_command()
+        return self._export_command
 
     def perform_import(self):
         self.build_command()
@@ -141,8 +176,19 @@ class Sqoop(object):
         except Exception as e:
             print(e)
             return 90
-    
-    def set_param(self, param:str, value:str)->bool:
+        # Se puede cambiar por un comando generico que se llame perform_task...
+        # O, crear mi propio comando que se llame perform export.
+
+    def perform_export(self):
+        self.build_export_command()
+        try:
+            print(self._export_command)
+            return call(self._export_command, shell=True)
+        except Exception as e:
+            print(e)
+            return 90
+
+    def set_param(self, param: str, value: str) -> bool:
         if param in self._properties:
             self._properties[param] = value
             if self.verbose_operations:
@@ -150,8 +196,8 @@ class Sqoop(object):
             return True
         else:
             return False
-    
-    def unset_param(self, param:str)->bool:
+
+    def unset_param(self, param: str) -> bool:
         if param in self._properties:
             self._properties[param] = None
             if self.verbose_operations:
@@ -159,4 +205,3 @@ class Sqoop(object):
             return True
         else:
             return False
-        
