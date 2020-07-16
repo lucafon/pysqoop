@@ -27,7 +27,7 @@ class Sqoop(object):
                  hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
                  hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False,
-                 export_dir=None, java_opts=None, fetch_size=None
+                 export_dir=None, java_opts=None, fetch_size=None, merge_key=None
                  ):
         # export_dir agregado.
 
@@ -79,6 +79,7 @@ class Sqoop(object):
         # export dir added for exports
         self._properties['--export-dir'] = export_dir
         self._properties['--fetch-size'] = fetch_size
+        self._properties['--merge-key'] = merge_key
 
         # columns for HBase
         self._properties['--hbase-table'] = hbase_table
