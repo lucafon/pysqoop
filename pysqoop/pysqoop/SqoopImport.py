@@ -27,7 +27,7 @@ class Sqoop(object):
                  hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
                  hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False,
-                 export_dir=None, java_opts=None, fetch_size=None, merge_key=None
+                 export_dir=None, java_opts=None, fetch_size=None, merge_key=None, avrofile=None
                  ):
         # export_dir agregado.
 
@@ -106,6 +106,8 @@ class Sqoop(object):
             self._properties['--direct'] = ''
         if parquetfile:
             self._properties['--as-parquetfile'] = ''
+        if avrofile:
+            self._properties['--as-avrodatafile'] = ''
         if oracle_partition:
             self._oracle_partition = '-Doraoop.import.partitions={}'.format(oracle_partition)
 
