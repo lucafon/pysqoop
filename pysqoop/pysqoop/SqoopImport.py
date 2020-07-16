@@ -27,11 +27,13 @@ class Sqoop(object):
                  hive_table=None,
                  hive_overwrite=None, warehouse_dir=None, oracle_partition=None, columns=None,
                  hbase_table=None, column_family=None, hbase_row_key=None, m=None, verbose_operations=False,
-                 export_dir=None
+                 export_dir=None, java_opts=None
                  ):
         # export_dir agregado.
 
         self.verbose_operations = verbose_operations
+        #java_opts have always first position
+        self._properties['{}'.format(java_opts)] = ''
 
         self._properties['-fs'] = fs
         self._properties['--create'] = create
