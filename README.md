@@ -56,7 +56,7 @@ Common arguments:
 #### A more concrete example
 The following code
 ```python
-sqoop = Sqoop(fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
+sqoop = Sqoop(java_opts='-Dmapreduce.job.user.classpath.first=true', fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
 enclosed_by='\'"\'', escaped_by='\\\\', null_string='\'\'', null_non_string='\'\'',
 table='sample_table', target_dir='hdfs://remote-cluster/user/hive/warehouse/db/sample_table',
 delete_target_dir=True, connect='jdbc:oracle:thin:@//your_ip:your_port/your_schema',
@@ -69,7 +69,7 @@ sqoop.perform_import()
 will execute the following command
 
 `
-sqoop import -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
+sqoop import -Dmapreduce.job.user.classpath.first=true -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
 `
 
 #### Conditional Building
