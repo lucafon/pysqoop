@@ -171,7 +171,7 @@ class Sqoop(object):
         self.build_command()
         try:
             print(self._command)
-            return call(self._command, shell=True)
+            return run(self._command, shell=True, universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except Exception as e:
             print(e)
             return 90
