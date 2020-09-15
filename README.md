@@ -1,7 +1,7 @@
 # pysqoop
 A python package that lets you sqoop into HDFS/Hive/HBase data from RDBMS using sqoop.
 
-[![PyPI](https://img.shields.io/badge/pip-v.0.0.14-blue.svg)](https://pypi.org/project/pysqoop)
+[![PyPI](https://img.shields.io/badge/pip-v.0.0.15-blue.svg)](https://pypi.org/project/pysqoop)
 ![Python](https://img.shields.io/badge/python-3.5+,2.7-green.svg)
 [![Tests](https://img.shields.io/badge/tests-6%20%2F%206-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unintary_tests.py)
 [![MIT license](http://img.shields.io/badge/license-MIT-orange.svg)](http://opensource.org/licenses/MIT)
@@ -56,7 +56,7 @@ Common arguments:
 #### A more concrete example
 The following code
 ```python
-sqoop = Sqoop(java_opts='-Dmapreduce.job.user.classpath.first=true', fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
+sqoop = Sqoop(fs='hdfs://remote-cluster:8020', hive_drop_import_delims=True, fields_terminated_by='\;',
 enclosed_by='\'"\'', escaped_by='\\\\', null_string='\'\'', null_non_string='\'\'',
 table='sample_table', target_dir='hdfs://remote-cluster/user/hive/warehouse/db/sample_table',
 delete_target_dir=True, connect='jdbc:oracle:thin:@//your_ip:your_port/your_schema',
@@ -69,7 +69,7 @@ sqoop.perform_import()
 will execute the following command
 
 `
-sqoop import -Dmapreduce.job.user.classpath.first=true -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
+sqoop import -fs hdfs://remote-cluster:8020 --hive-drop-import-delims  --fields-terminated-by \; --enclosed-by \'\"\' --escaped-by \\\\ --null-string \'\' --null-non-string \'\' --table sample_table --target-dir hdfs://remote-cluster/user/hive/warehouse/db/sample_table --delete-target-dir  --connect jdbc:oracle:thin:@//your_ip:your_port/your_schema --username user --password pwd --num-mappers 2 --bindir /path/to/bindir/folder
 `
 
 #### Conditional Building
@@ -90,6 +90,13 @@ if taget_is_hbase :
 
 sqoop.perform_import()
 ```
+
+### Unit Testing
+
+In order to run unit tests open the terminal and change the current directory to `unittests` folder.
+
+Then, simply run `python unintary_tests.py`. Add your unit tests in this file
+
 
 
 ### Doing
