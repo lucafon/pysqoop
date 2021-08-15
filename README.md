@@ -2,7 +2,7 @@
 A python package that lets you sqoop into HDFS/Hive/HBase data from RDBMS using sqoop.
 
 [![PyPI](https://img.shields.io/badge/pip-v.0.0.15-blue.svg)](https://pypi.org/project/pysqoop)
-![Python](https://img.shields.io/badge/python-3.5+,2.7-green.svg)
+![Python](https://img.shields.io/badge/python-3.5+-green.svg)
 [![Tests](https://img.shields.io/badge/tests-6%20%2F%206-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unintary_tests.py)
 [![MIT license](http://img.shields.io/badge/license-MIT-orange.svg)](http://opensource.org/licenses/MIT)
 
