@@ -15,7 +15,7 @@ class MapredJob(object):
     '''class for sqoop job management'''
 
     def __init__(self, job_id=None):
-        self.priority_options = []
+        self.priority_options = ['VERY_HIGH', 'HIGH', 'NORMAL', 'LOW', 'VERY_LOW', 'DEFAULT']
         self._properties = collections.OrderedDict()
 
     @staticmethod
@@ -34,7 +34,7 @@ class MapredJob(object):
     def set_priority(self, job_id: str, priority: str) -> bool:
         '''change priority of a runing job VERY_HIGH HIGH NORMAL LOW VERY_LOW DEFAULT'''
         command = f"mapred job -set-priority {job_id} {priority}"
-        if priority in self._priority_options:
+        if priority in self.priority_options:
             try:
                 process = subprocess.run(
                     command, stdout=subprocess.PIPE,

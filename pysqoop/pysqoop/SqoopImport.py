@@ -1,4 +1,5 @@
 from subprocess import call, run
+import subprocess
 import collections
 
 
@@ -33,7 +34,8 @@ class Sqoop(object):
 
         self.verbose_operations = verbose_operations
         #java_opts have always first position
-        self._properties['{}'.format(java_opts)] = ''
+        if java_opts:
+            self._properties['{}'.format(java_opts)] = ''
 
         self._properties['-fs'] = fs
         self._properties['--create'] = create
