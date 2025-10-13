@@ -3,6 +3,8 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  repository_dispatch:
+    types: [release-published]
   workflow_dispatch:
     inputs:
       test_pypi:
@@ -51,7 +53,7 @@ jobs:
 
   publish-to-pypi:
     name: Publish to PyPI
-    if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+    if: ${{ (github.event_name == 'release' && github.event.action == 'published') || github.event_name == 'repository_dispatch' }}
     needs: [build]
     runs-on: ubuntu-latest
     environment:
