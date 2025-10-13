@@ -1,4 +1,7 @@
 import unittest
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'pysqoop'))
 from pysqoop.SqoopImport import Sqoop
 
 
@@ -66,6 +69,50 @@ class TestStringMethods(unittest.TestCase):
         sqoop.set_param(param="--hbase-row-key", value="Id_Ruta")
         sqoop.set_param(param="-m", value="1")
         self.assertEqual(expected, sqoop.command())
+
+    def test_perform_import_subprocess_fix(self):
+        """Test perform_import() method - fixes subprocess import issue #16"""
+
+        # Test that perform_import() doesn't raise NameError for subprocess
+        sqoop = Sqoop(help=True)
+
+        # This should not raise "name 'subprocess' is not defined"
+        try:
+            result = sqoop.perform_import()
+
+            # The method should return either a CompletedProcess or integer (90 on error)
+            self.assertTrue(
+                hasattr(result, 'returncode') or isinstance(result, int),
+                "perform_import should return CompletedProcess or integer"
+            )
+
+            # If it's a CompletedProcess, it should have the expected attributes
+            if hasattr(result, 'returncode'):
+                self.assertTrue(hasattr(result, 'stdout'), "CompletedProcess should have stdout")
+                self.assertTrue(hasattr(result, 'stderr'), "CompletedProcess should have stderr")
+
+        except NameError as e:
+            if "subprocess" in str(e):
+                self.fail("perform_import() failed with subprocess NameError - import missing!")
+            else:
+                raise  # Re-raise if it's a different NameError
+
+        # Test perform_export() as well to ensure consistency
+        sqoop_export = Sqoop(table='test_table', export_dir='/path/to/export')
+        try:
+            export_result = sqoop_export.perform_export()
+
+            # perform_export uses call() which returns int, or 90 on error
+            self.assertTrue(
+                isinstance(export_result, int),
+                "perform_export should return integer"
+            )
+
+        except NameError as e:
+            if "subprocess" in str(e):
+                self.fail("perform_export() failed with subprocess NameError - import missing!")
+            else:
+                raise
 
 
 if __name__ == '__main__':
