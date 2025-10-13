@@ -3,7 +3,7 @@ A python package that lets you sqoop into HDFS/Hive/HBase data from RDBMS using 
 
 [![PyPI](https://img.shields.io/badge/pip-v.0.0.16-blue.svg)](https://pypi.org/project/pysqoop)
 ![Python](https://img.shields.io/badge/python-3.5+-green.svg)
-[![Tests](https://img.shields.io/badge/tests-6%20%2F%206-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unintary_tests.py)
+[![Tests](https://img.shields.io/badge/tests-6%20%2F%206-brightgreen.svg)](https://github.com/lucafon/pysqoop/blob/master/unittests/unitary_tests.py)
 [![MIT license](http://img.shields.io/badge/license-MIT-orange.svg)](http://opensource.org/licenses/MIT)
 
 To install the package via pip, run 
@@ -95,7 +95,7 @@ sqoop.perform_import()
 
 In order to run unit tests open the terminal and change the current directory to `unittests` folder.
 
-Then, simply run `python unintary_tests.py`. Add your unit tests in this file
+Then, simply run `python unitary_tests.py`. Add your unit tests in this file
 
 
 

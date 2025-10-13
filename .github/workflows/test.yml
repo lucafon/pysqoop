@@ -1,0 +1,143 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        exclude:
+          # Reduce matrix size for efficiency while maintaining coverage
+          - os: windows-latest
+            python-version: "3.7"
+          - os: windows-latest
+            python-version: "3.8"
+          - os: macos-latest
+            python-version: "3.7"
+          - os: macos-latest
+            python-version: "3.8"
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install build pytest pytest-cov
+        # Install package in development mode
+        cd pysqoop
+        python -m pip install -e .
+        cd ..
+
+    - name: Run unit tests
+      run: |
+        cd unittests
+        python -m pytest unitary_tests.py -v --tb=short
+
+    - name: Test package import
+      run: |
+        python -c "
+        from pysqoop.SqoopImport import Sqoop
+        from pysqoop.SqoopJob import SqoopJob
+        from pysqoop.MapredJob import MapredJob
+        print('✓ All imports successful')
+
+        # Basic functionality test
+        sqoop = Sqoop(table='test')
+        cmd = sqoop.command()
+        assert 'sqoop import' in cmd
+        assert '--table test' in cmd
+        print('✓ Basic functionality test passed')
+        "
+
+    - name: Test package building
+      run: |
+        cd pysqoop
+        python -m build
+        # Verify the built package
+        ls -la dist/
+        python -m pip install dist/*.whl --force-reinstall
+        cd ..
+        python -c "import pysqoop; print('✓ Package installation test passed')"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 black isort
+
+    - name: Run flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 pysqoop --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 pysqoop --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+
+    - name: Check code formatting with black
+      run: |
+        black --check --diff pysqoop unittests
+
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only --diff pysqoop unittests
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install bandit safety
+
+    - name: Run security checks with bandit
+      run: |
+        bandit -r pysqoop -f json -o bandit-report.json || true
+        bandit -r pysqoop
+
+    - name: Check for known security vulnerabilities
+      run: |
+        cd pysqoop
+        python -m pip install .
+        cd ..
+        # Check installed packages for known vulnerabilities
+        safety check --json --output safety-report.json || true
+        safety check
+
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
