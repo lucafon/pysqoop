@@ -70,6 +70,55 @@ class TestStringMethods(unittest.TestCase):
         sqoop.set_param(param="-m", value="1")
         self.assertEqual(expected, sqoop.command())
 
+    def test_java_opts_functionality(self):
+        """Test java_opts parameter handling - fixes issue #13"""
+
+        # Test without java_opts
+        sqoop_no_opts = Sqoop(table='test_table')
+        cmd_no_opts = sqoop_no_opts.command()
+        self.assertEqual(cmd_no_opts, 'sqoop import --table test_table')
+        self.assertNotIn('None', cmd_no_opts)
+
+        # Test with java_opts
+        sqoop_with_opts = Sqoop(table='test_table', java_opts='-Xmx1024m')
+        cmd_with_opts = sqoop_with_opts.command()
+        self.assertEqual(cmd_with_opts, 'sqoop import -Xmx1024m --table test_table')
+
+        # Test java_opts is placed at the beginning
+        self.assertTrue(cmd_with_opts.startswith('sqoop import -Xmx1024m'))
+
+        # Test with empty java_opts
+        sqoop_empty_opts = Sqoop(table='test_table', java_opts='')
+        cmd_empty_opts = sqoop_empty_opts.command()
+        self.assertEqual(cmd_empty_opts, 'sqoop import --table test_table')
+
+        # Test with None java_opts explicitly
+        sqoop_none_opts = Sqoop(table='test_table', java_opts=None)
+        cmd_none_opts = sqoop_none_opts.command()
+        self.assertEqual(cmd_none_opts, 'sqoop import --table test_table')
+
+        # Test export command with java_opts
+        sqoop_export = Sqoop(table='test_table', java_opts='-Xmx512m', export_dir='/path/to/export')
+        export_cmd = sqoop_export.export_command()
+        self.assertEqual(export_cmd, 'sqoop export -Xmx512m --table test_table --export-dir /path/to/export')
+
+        # Test export command without java_opts
+        sqoop_export_no_opts = Sqoop(table='test_table', export_dir='/path/to/export')
+        export_cmd_no_opts = sqoop_export_no_opts.export_command()
+        self.assertEqual(export_cmd_no_opts, 'sqoop export --table test_table --export-dir /path/to/export')
+
+        # Test complex command with java_opts and multiple parameters
+        sqoop_complex = Sqoop(
+            table='complex_table',
+            java_opts='-Xmx2048m -Djava.security.egd=file:/dev/urandom',
+            username='user',
+            password='pass',
+            num_mappers=4
+        )
+        complex_cmd = sqoop_complex.command()
+        expected_complex = 'sqoop import -Xmx2048m -Djava.security.egd=file:/dev/urandom --table complex_table --username user --password pass --num-mappers 4'
+        self.assertEqual(complex_cmd, expected_complex)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -34,8 +34,7 @@ class Sqoop(object):
 
         self.verbose_operations = verbose_operations
         #java_opts have always first position
-        if java_opts:
-            self._properties['{}'.format(java_opts)] = ''
+        self.java_opts = java_opts if java_opts else None
 
         self._properties['-fs'] = fs
         self._properties['--create'] = create
@@ -117,17 +116,21 @@ class Sqoop(object):
         self._perform_checks()
         if self.verbose_operations:
             print(f"building command")
-        if not self.oracle_partition:
-            self._command = \
-                'sqoop import {}'.format(
-                    ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
-                )
+
+        # Build the parameter string
+        params = ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
+
+        # Build command with java_opts at the beginning if present
+        if self.java_opts:
+            if not hasattr(self, '_oracle_partition'):
+                self._command = 'sqoop import {} {}'.format(self.java_opts, params)
+            else:
+                self._command = 'sqoop import {} {} {}'.format(self.java_opts, self._oracle_partition, params)
         else:
-            self._command = \
-                'sqoop import {} {}'.format(
-                    self.oracle_partition,
-                    ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
-                )
+            if not hasattr(self, '_oracle_partition'):
+                self._command = 'sqoop import {}'.format(params)
+            else:
+                self._command = 'sqoop import {} {}'.format(self._oracle_partition, params)
 
     def build_export_command(self) -> None:
         """ Builds the command to perform Sqoop Exports"""
@@ -135,10 +138,15 @@ class Sqoop(object):
         # skipping checks for right now.
         if self.verbose_operations:
             print(f"building export command")
-        self._export_command = \
-            'sqoop export {}'.format(
-                ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
-            )
+
+        # Build the parameter string
+        params = ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
+
+        # Build export command with java_opts at the beginning if present
+        if self.java_opts:
+            self._export_command = 'sqoop export {} {}'.format(self.java_opts, params)
+        else:
+            self._export_command = 'sqoop export {}'.format(params)
 
     def _perform_checks(self):
         if all(v is None for v in self._properties.values()):
