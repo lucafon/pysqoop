@@ -10,9 +10,6 @@ class Sqoop(object):
     _ERROR_HBASE_KEY_NEEDED = "--hbase-table needs the --hbase-row-key and --column-family param"
     _ERROR_HBASE_TABLE_NEEDED = "--hbase-row-key needs the --hbase-table and --column-family param"
     _ERROR_HBASE_KEY_TABLE_NEEDED = "--column-family needs the --hbase-table and --hbase-row-key param"
-    _properties = collections.OrderedDict()
-    oracle_partition = None
-    verbose_operations = False
 
     def __init__(self, fs=None, create=None, hive_drop_import_delims=None, fields_terminated_by=None,
                  input_escaped_by=None, enclosed_by=None, escaped_by=None, null_string=None,
@@ -33,6 +30,8 @@ class Sqoop(object):
         # export_dir agregado.
 
         self.verbose_operations = verbose_operations
+        self._properties = collections.OrderedDict()
+
         #java_opts have always first position
         if java_opts:
             self._properties['{}'.format(java_opts)] = ''
@@ -117,7 +116,7 @@ class Sqoop(object):
         self._perform_checks()
         if self.verbose_operations:
             print(f"building command")
-        if not self.oracle_partition:
+        if not hasattr(self, '_oracle_partition'):
             self._command = \
                 'sqoop import {}'.format(
                     ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
@@ -125,7 +124,7 @@ class Sqoop(object):
         else:
             self._command = \
                 'sqoop import {} {}'.format(
-                    self.oracle_partition,
+                    self._oracle_partition,
                     ' '.join(['{} {}'.format(key, val) for key, val in self._properties.items() if val is not None])
                 )
 
