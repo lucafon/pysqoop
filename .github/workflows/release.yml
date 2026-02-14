@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # to be able to publish a GitHub release
+  issues: write    # to be able to comment on released issues
+  pull-requests: write  # to be able to comment on released pull requests
+  id-token: write  # to enable use of OIDC for npm provenance
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.repository == 'nishair/pysqoop' || github.repository == 'lucafon/pysqoop'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install python-semantic-release
+
+    - name: Git config
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Run semantic release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd pysqoop
+        semantic-release version
+
+    - name: Get new version
+      id: get_version
+      run: |
+        cd pysqoop
+        version=$(python -c "import pysqoop; print(pysqoop.__version__)")
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "tag=v$version" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      if: steps.get_version.outputs.version != '0.0.17'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd pysqoop
+        semantic-release publish
+
+    - name: Trigger PyPI publication
+      if: steps.get_version.outputs.version != '0.0.17'
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: release-published
+        client-payload: '{"version": "${{ steps.get_version.outputs.version }}", "tag": "${{ steps.get_version.outputs.tag }}"}'
